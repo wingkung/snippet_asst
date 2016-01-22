@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>snippet assistant</title>
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://cdn.bootcss.com/angular.js/1.4.8/angular.min.js"></script>
+    <script src="http://cdn.bootcss.com/lodash.js/3.10.1/lodash.min.js"></script>
+    <script src="http://jsbeautifier.org/js/lib/beautify.js"></script>
+    <script src="http://jsbeautifier.org/js/lib/beautify-html.js"></script>
+</head>
+<body ng-app="app">
+    <div ng-controller="CodeCtrl">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <input class="form-control input-sm" ng-model="snippet.name" placeholder="snippet name">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control input-sm" ng-model="snippet.prefix" placeholder="snippet prefix">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control input-sm" ng-model="snippet.description" placeholder="snippet description">
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control input-sm" ng-model="snippet.type">
+                                <option value="html" selected>html</option>
+                                <option value="js" selected>js</option>
+                            </select>
+                        </div> 
+                    </form>
+                    <textarea class="form-control" rows="40" ng-model="snippet.htmlCode"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <textarea class="form-control" rows="40" ng-model="snippet.jsonCode"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var app = angular.module('app', []);
+        app.controller("CodeCtrl", function($scope){
+            $scope.snippet = {
+                prefix: '',
+                body: [],
+                type: 'html'
+            };
+            $scope.$watch("snippet.htmlCode", function(){
+                if ($scope.snippet.type == "js")
+                    $scope.snippet.htmlCode = js_beautify($scope.snippet.htmlCode);
+                else
+                    $scope.snippet.htmlCode = html_beautify($scope.snippet.htmlCode);
+                $scope.snippet.body = [];
+                if($scope.snippet.name){
+                    var htmlLines = $scope.snippet.htmlCode.split('\n');
+                    _.forEach(htmlLines, function(line){
+                        $scope.snippet.body.push(line);
+                    })
+                    var json = {};
+                    json[$scope.snippet.name] = {
+                        prefix: $scope.snippet.prefix,
+                        body: $scope.snippet.body,
+                        description: $scope.snippet.description
+                    }
+                    $scope.snippet.jsonCode = js_beautify(JSON.stringify(json));
+                }
+            })
+        })
+    </script>
+</body>
+</html>
