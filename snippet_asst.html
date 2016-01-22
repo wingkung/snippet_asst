@@ -7,6 +7,7 @@
     <script src="http://cdn.bootcss.com/lodash.js/3.10.1/lodash.min.js"></script>
     <script src="http://jsbeautifier.org/js/lib/beautify.js"></script>
     <script src="http://jsbeautifier.org/js/lib/beautify-html.js"></script>
+    <script src="http://jsbeautifier.org/js/lib/beautify-css.js"></script>
 </head>
 <body ng-app="app">
     <div ng-controller="CodeCtrl">
@@ -26,7 +27,8 @@
                         <div class="form-group">
                             <select class="form-control input-sm" ng-model="snippet.type">
                                 <option value="html" selected>html</option>
-                                <option value="js" selected>js</option>
+                                <option value="js">js</option>
+                                <option value="css">css</option>
                             </select>
                         </div> 
                     </form>
@@ -53,7 +55,9 @@
             $scope.$watch("snippet.htmlCode", function(){
                 if ($scope.snippet.type == "js")
                     $scope.snippet.htmlCode = js_beautify($scope.snippet.htmlCode);
-                else
+                else if($scope.snippet.type == "css")
+                    $scope.snippet.htmlCode = css_beautify($scope.snippet.htmlCode);
+                else    
                     $scope.snippet.htmlCode = html_beautify($scope.snippet.htmlCode);
                 $scope.snippet.body = [];
                 if($scope.snippet.name){
